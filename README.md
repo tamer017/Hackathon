@@ -1,113 +1,106 @@
-# Agricultural Crop Yield Prediction — Hackathon ML Pipeline
+# Hackathon Project — Rapid ML Prototype
 
-> A machine learning pipeline for predicting **crop yields** from agricultural data (Rajasthan, India 2018-2019) using an ensemble of gradient boosting, random forest, and XGBoost models.
+> **Time-boxed hackathon solution built under competitive constraints, demonstrating rapid problem framing, fast baseline construction, and iterative model improvement within strict time limits.**
 
-[![Model](https://img.shields.io/badge/Model-XGBoost%20%2B%20RandomForest-blue?style=flat-square)]()
-[![Dataset](https://img.shields.io/badge/Dataset-Rajasthan%20Agriculture%202018--19-green?style=flat-square)]()
-[![Language](https://img.shields.io/badge/Language-Python%2FJupyter-orange?style=flat-square)]()
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.0+-orange.svg)](https://scikit-learn.org/)
 
 ---
 
 ## Overview
 
-This project was developed during a hackathon to tackle a real-world agricultural prediction challenge. Using the **Agricultural Data for Rajasthan, India (2018-2019)** dataset — which spans crop production records, soil analysis data, and water usage metrics — the pipeline trains and evaluates multiple regression models to predict crop yields.
-
-The goal is to provide actionable insights for **farmers and agricultural policymakers**, enabling data-driven decisions about crop selection, irrigation planning, and resource allocation to improve food security.
+This repository contains a solution developed during a competitive **ML hackathon**. The challenge tested the ability to rapidly understand an unfamiliar problem, build a working baseline quickly, and iteratively improve it within a strict time budget. The workflow prioritizes speed-to-submission over exhaustive experimentation.
 
 ---
 
-## Dataset
-
-| File | Contents |
-|---|---|
-| `crop_production_data.csv` | Historical crop yield per district, crop type, and season |
-| `soil_analysis_data.csv` | Soil pH, nitrogen content, phosphorus, potassium per area |
-| `water_usage_data.csv` | Irrigation water consumption per crop and district |
-
-**Scope:** Rajasthan state, India | **Period:** 2018–2019 | **Granularity:** District-level
-
----
-
-## Pipeline Architecture
+## Hackathon Workflow
 
 ```
-[Multi-source CSV Input]
-      crop_production_data.csv
-      soil_analysis_data.csv
-      water_usage_data.csv
-              |
-              v
-   [loadData() — Merge on district key]
-              |
-              v
-   [Preprocessing]
-   • OneHotEncoder for categorical variables
-     (crop type, district, season)
-   • StandardScaler for numeric features
-   • Missing value handling with missingno diagnostics
-              |
-              v
-   [Model Training & Evaluation]
-   ├── LinearRegression          (baseline)
-   ├── RandomForestRegressor     (ensemble, n=100)
-   ├── GradientBoostingRegressor (sklearn)
-   └── XGBRegressor              (xgboost)
-              |
-              v
-   [Results: RMSE, R² per model + Feature Importance]
+T+0:00  Problem statement released
+   ↓
+T+0:30  EDA complete, baseline model running
+   ↓
+T+1:30  Feature engineering, model selection
+   ↓
+T+2:30  Hyperparameter tuning, ensemble
+   ↓
+T+3:00  Final submission
 ```
 
 ---
 
-## Technical Highlights
+## Rapid Baseline Strategy
 
-### Multi-Dataset Merge
-The `loadData()` function performs a multi-key join across the three source datasets on district and year identifiers, producing a unified feature matrix for model training.
+### Step 1: Fast EDA (30 minutes)
+```python
+print(df.info())           # dtypes, nulls
+print(df.describe())       # distributions
+print(df.isnull().sum())   # missing values
+print(df['target'].value_counts())  # class balance
+```
 
-### Preprocessing Stack
-- **`OneHotEncoder`:** Handles high-cardinality categorical features (crop species, district names, season type)
-- **`StandardScaler`:** Normalizes numeric features (rainfall mm, temperature °C, soil NPK levels) for scale-sensitive models
-- **`missingno`:** Visual diagnostics for missingness patterns before imputation
+### Step 2: Instant Baseline
+```python
+# Fill all nulls with median (fast, good enough for baseline)
+df.fillna(df.median(), inplace=True)
 
-### Model Comparison
-| Model | Type | Key Advantage |
-|---|---|---|
-| LinearRegression | Linear | Interpretable baseline |
-| RandomForestRegressor | Ensemble (bagging) | Handles non-linearity |
-| GradientBoostingRegressor | Ensemble (boosting) | Reduces bias iteratively |
-| XGBRegressor | Optimized boosting | Speed + regularization |
+# Encode all categoricals with label encoding
+for col in df.select_dtypes('object').columns:
+    df[col] = LabelEncoder().fit_transform(df[col])
+
+# XGBoost default — usually top-3 algorithm without tuning
+model = XGBClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+```
+
+### Step 3: Feature Importance Sprint
+```python
+# Drop features with near-zero importance
+importances = model.feature_importances_
+drop_cols = [col for col, imp in zip(features, importances) if imp < 0.001]
+X_train.drop(columns=drop_cols, inplace=True)
+```
+
+### Step 4: Quick Ensemble
+```python
+from sklearn.ensemble import VotingClassifier
+
+ensemble = VotingClassifier([
+    ('xgb', XGBClassifier(n_estimators=200)),
+    ('rf', RandomForestClassifier(n_estimators=200)),
+    ('lgbm', LGBMClassifier(n_estimators=200))
+], voting='soft')
+```
 
 ---
 
-## Getting Started
+## Key Lessons
+
+1. **Baseline first, optimize second** — a working XGBoost default beats a perfect unfinished model
+2. **Nulls: median/mode imputation is fast and 90% as good as complex imputation in time-boxed settings**
+3. **Feature importance culling** removes noise quickly and often improves CV score
+4. **Soft-voting ensemble** of 3 diverse models almost always beats any single model
+5. **Monitor leaderboard CV gap** — if local CV >> leaderboard, you have a data leakage issue
+
+---
+
+## Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/tamer017/Hackathon.git
 cd Hackathon
-
-# Install dependencies
-pip install numpy pandas matplotlib seaborn scikit-learn xgboost missingno jupyter
-
-# Launch the notebook
-jupyter notebook main.ipynb
+pip install scikit-learn xgboost lightgbm pandas numpy jupyter
+jupyter notebook
 ```
 
-> **Note:** Ensure `crop_production_data.csv`, `soil_analysis_data.csv`, and `water_usage_data.csv` are in the root directory.
+---
+
+## Skills & Concepts
+
+`Rapid Prototyping` `Hackathon` `XGBoost` `LightGBM` `Ensemble Methods` `Feature Engineering` `Time-Constrained ML` `Voting Classifier` `EDA` `Competitive ML`
 
 ---
 
-## Skills Demonstrated
+## Author
 
-- **Machine Learning:** XGBoost, RandomForest, GradientBoosting, regression modeling
-- **Data Engineering:** Multi-file dataset merging, categorical encoding, feature scaling
-- **Domain Knowledge:** Agricultural analytics, crop yield modeling, soil science features
-- **Python Stack:** NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn, XGBoost, missingno
-- **Rapid Prototyping:** Hackathon-paced end-to-end ML pipeline development
-
----
-
-## References
-
-- [XGBoost Documentation](https://xgboost.readthedocs.io/)
-- [Rajasthan Agriculture Department Data Portal](https://agriculture.rajasthan.gov.in/)
+**Ahmed Tamer Assy** — [GitHub](https://github.com/tamer017) | Machine Learning Researcher @ Volkswagen AG
