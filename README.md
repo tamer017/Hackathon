@@ -1,15 +1,42 @@
-# Hackathon Project — Rapid ML Prototype
+# Agricultural Water Consumption Optimization — Hackathon ML Solution
 
-> **Time-boxed hackathon solution built under competitive constraints, demonstrating rapid problem framing, fast baseline construction, and iterative model improvement within strict time limits.**
+> **Time-boxed hackathon solution for the [Agricultural Data for Rajasthan, India (2018-2019)](https://www.kaggle.com/datasets/suraj520/agricultural-data-for-rajasthan-india-2018-2019) challenge — rapid problem framing, fast baseline construction, and iterative model improvement under strict time limits.**
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.0+-orange.svg)](https://scikit-learn.org/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-1.6+-green.svg)](https://xgboost.readthedocs.io/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
 ## Overview
 
-This repository contains a solution developed during a competitive **ML hackathon**. The challenge tested the ability to rapidly understand an unfamiliar problem, build a working baseline quickly, and iteratively improve it within a strict time budget. The workflow prioritizes speed-to-submission over exhaustive experimentation.
+This project aims to **optimize water consumption in agriculture** by developing an AI solution based on the agricultural dataset for Rajasthan, India. The solution uses machine learning techniques to predict and optimize water usage based on soil analysis and crop production data — developed under competitive hackathon constraints.
+
+The dataset includes information on crop production, soil analysis, and water usage, covering the 2018–2019 agricultural season for the state of Rajasthan, India.
+
+---
+
+## Dataset
+
+- **Source:** [Agricultural Data for Rajasthan, India (2018-2019)](https://www.kaggle.com/datasets/suraj520/agricultural-data-for-rajasthan-india-2018-2019) on Kaggle
+- **Features:** Crop production records, soil analysis measurements, water usage statistics
+- **Preprocessing:** Merged multi-source dataset, handled missing values, encoded categoricals
+
+---
+
+## Project Structure
+
+```
+├── data/               # Dataset files (crop production, soil analysis, water usage)
+├── notebooks/          # Jupyter notebooks for EDA, preprocessing, and modeling
+├── src/
+│   ├── data_preprocessing.py   # Loading, preprocessing, and merging the dataset
+│   ├── modeling.py             # ML models, training and evaluation functions
+│   └── utils.py                # Utility functions
+├── results/            # Model evaluation results and visualizations
+└── README.md
+```
 
 ---
 
@@ -84,20 +111,40 @@ ensemble = VotingClassifier([
 
 ---
 
-## Installation
+## Requirements
 
 ```bash
 git clone https://github.com/tamer017/Hackathon.git
 cd Hackathon
-pip install scikit-learn xgboost lightgbm pandas numpy jupyter
+pip install -r requirements.txt
 jupyter notebook
 ```
+
+Dependencies: `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `xgboost`, `category_encoders`, `missingno`
+
+---
+
+## Results
+
+Model evaluation results and visualizations are stored in the `results/` directory. Full findings can be found in the [project report](report/report.pdf).
 
 ---
 
 ## Skills & Concepts
 
-`Rapid Prototyping` `Hackathon` `XGBoost` `LightGBM` `Ensemble Methods` `Feature Engineering` `Time-Constrained ML` `Voting Classifier` `EDA` `Competitive ML`
+`Rapid Prototyping` `Hackathon` `XGBoost` `LightGBM` `Ensemble Methods` `Feature Engineering` `Time-Constrained ML` `Voting Classifier` `EDA` `Agricultural ML` `Competitive ML` `Water Optimization`
+
+---
+
+## Contributors
+
+- Ahmed Tamer Assy — [GitHub](https://github.com/tamer017)
+
+---
+
+## Acknowledgements
+
+Dataset provided by [Suraj520](https://www.kaggle.com/datasets/suraj520/agricultural-data-for-rajasthan-india-2018-2019) on Kaggle.
 
 ---
 
