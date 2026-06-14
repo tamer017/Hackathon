@@ -1,67 +1,113 @@
-# Agricultural Water Consumption Optimization (Hackathon)
+# Agricultural Crop Yield Prediction — Hackathon ML Pipeline
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+> A machine learning pipeline for predicting **crop yields** from agricultural data (Rajasthan, India 2018-2019) using an ensemble of gradient boosting, random forest, and XGBoost models.
+
+[![Model](https://img.shields.io/badge/Model-XGBoost%20%2B%20RandomForest-blue?style=flat-square)]()
+[![Dataset](https://img.shields.io/badge/Dataset-Rajasthan%20Agriculture%202018--19-green?style=flat-square)]()
+[![Language](https://img.shields.io/badge/Language-Python%2FJupyter-orange?style=flat-square)]()
+
+---
 
 ## Overview
-This project aims to optimize water consumption in agriculture by developing an AI solution based on the agricultural dataset for Rajasthan, India, from the Kaggle dataset repository. The solution uses machine learning techniques to predict and optimize water usage based on soil analysis and crop production data.
+
+This project was developed during a hackathon to tackle a real-world agricultural prediction challenge. Using the **Agricultural Data for Rajasthan, India (2018-2019)** dataset — which spans crop production records, soil analysis data, and water usage metrics — the pipeline trains and evaluates multiple regression models to predict crop yields.
+
+The goal is to provide actionable insights for **farmers and agricultural policymakers**, enabling data-driven decisions about crop selection, irrigation planning, and resource allocation to improve food security.
+
+---
 
 ## Dataset
-The dataset used in this project is the [Agricultural Data for Rajasthan, India (2018-2019)](https://www.kaggle.com/datasets/suraj520/agricultural-data-for-rajasthan-india-2018-2019). It includes information on crop production, soil analysis, and water usage. The dataset has been preprocessed and merged for the analysis.
 
-## Requirements
-- Python  
-- Pandas  
-- NumPy  
-- Matplotlib  
-- Seaborn  
-- Scikit-learn  
-- XGBoost  
-- Category Encoders  
-- Missingno  
+| File | Contents |
+|---|---|
+| `crop_production_data.csv` | Historical crop yield per district, crop type, and season |
+| `soil_analysis_data.csv` | Soil pH, nitrogen content, phosphorus, potassium per area |
+| `water_usage_data.csv` | Irrigation water consumption per crop and district |
 
-Install the required packages using pip:
+**Scope:** Rajasthan state, India | **Period:** 2018–2019 | **Granularity:** District-level
 
-```pip install -r requirements.txt```
+---
 
-## Project Structure
-The project repository is organized as follows:
+## Pipeline Architecture
 
-- `data/`: Contains the dataset files (crop production, soil analysis, and water usage).
-- `notebooks/`: Jupyter notebooks for data exploration, preprocessing, and modeling.
-- `src/`: Source code files for the project.
-    - `data_preprocessing.py`: Implements functions for loading, preprocessing, and merging the dataset.
-    - `modeling.py`: Contains the machine learning models and functions for training and evaluation.
-    - `utils.py`: Utility functions used in the project.
-- `results/`: Contains the model evaluation results and visualizations.
-- `README.md`: Project overview, instructions, and documentation.
+```
+[Multi-source CSV Input]
+      crop_production_data.csv
+      soil_analysis_data.csv
+      water_usage_data.csv
+              |
+              v
+   [loadData() — Merge on district key]
+              |
+              v
+   [Preprocessing]
+   • OneHotEncoder for categorical variables
+     (crop type, district, season)
+   • StandardScaler for numeric features
+   • Missing value handling with missingno diagnostics
+              |
+              v
+   [Model Training & Evaluation]
+   ├── LinearRegression          (baseline)
+   ├── RandomForestRegressor     (ensemble, n=100)
+   ├── GradientBoostingRegressor (sklearn)
+   └── XGBRegressor              (xgboost)
+              |
+              v
+   [Results: RMSE, R² per model + Feature Importance]
+```
 
-## Usage
-1. Clone the repository:
+---
 
-git clone https://github.com/your-username/agricultural-water-consumption.git
-cd agricultural-water-consumption
+## Technical Highlights
 
-2. Install the required packages:
+### Multi-Dataset Merge
+The `loadData()` function performs a multi-key join across the three source datasets on district and year identifiers, producing a unified feature matrix for model training.
 
-pip install -r requirements.txt
+### Preprocessing Stack
+- **`OneHotEncoder`:** Handles high-cardinality categorical features (crop species, district names, season type)
+- **`StandardScaler`:** Normalizes numeric features (rainfall mm, temperature °C, soil NPK levels) for scale-sensitive models
+- **`missingno`:** Visual diagnostics for missingness patterns before imputation
 
+### Model Comparison
+| Model | Type | Key Advantage |
+|---|---|---|
+| LinearRegression | Linear | Interpretable baseline |
+| RandomForestRegressor | Ensemble (bagging) | Handles non-linearity |
+| GradientBoostingRegressor | Ensemble (boosting) | Reduces bias iteratively |
+| XGBRegressor | Optimized boosting | Speed + regularization |
 
-3. Run the Jupyter notebooks in the `notebooks/` directory for data exploration, preprocessing, and modeling.
+---
 
-4. Execute the main script to train and evaluate the machine learning models:
+## Getting Started
 
-python src/main.py
+```bash
+# Clone the repository
+git clone https://github.com/tamer017/Hackathon.git
+cd Hackathon
 
+# Install dependencies
+pip install numpy pandas matplotlib seaborn scikit-learn xgboost missingno jupyter
 
-## Results
-The results of the project, including evaluation metrics and visualizations, are stored in the `results/` directory. The findings and insights can be found in the [project report](report/report.pdf).
+# Launch the notebook
+jupyter notebook main.ipynb
+```
 
-## License
-This project is licensed under the [MIT License](LICENSE).
+> **Note:** Ensure `crop_production_data.csv`, `soil_analysis_data.csv`, and `water_usage_data.csv` are in the root directory.
 
-## Contributors
-- John Doe [@johndoe](https://github.com/johndoe)
-- Jane Smith [@janesmith](https://github.com/janesmith)
+---
 
-## Acknowledgements
-We would like to thank the contributors of the [Agricultural Data for Rajasthan, India (2018-2019)](https://www.kaggle.com/datasets/suraj520/agricultural-data-for-rajasthan-india-2018-2019) dataset on Kaggle.
+## Skills Demonstrated
+
+- **Machine Learning:** XGBoost, RandomForest, GradientBoosting, regression modeling
+- **Data Engineering:** Multi-file dataset merging, categorical encoding, feature scaling
+- **Domain Knowledge:** Agricultural analytics, crop yield modeling, soil science features
+- **Python Stack:** NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn, XGBoost, missingno
+- **Rapid Prototyping:** Hackathon-paced end-to-end ML pipeline development
+
+---
+
+## References
+
+- [XGBoost Documentation](https://xgboost.readthedocs.io/)
+- [Rajasthan Agriculture Department Data Portal](https://agriculture.rajasthan.gov.in/)
